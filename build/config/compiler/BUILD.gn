@@ -397,7 +397,8 @@ config("compiler") {
       "-ffunction-sections",
       "-funwind-tables",
       "-fno-short-enums",
-      "-nostdinc++"
+      "-nostdinc++",
+      "-flto"
     ]
     if (!is_clang) {
       # Clang doesn't support these flags.
@@ -427,6 +428,7 @@ config("compiler") {
       "-Wl,--no-undefined",
       "-Wl,--exclude-libs,ALL",
       "-fuse-ld=lld",
+      "-flto",
     ]
     if (current_cpu == "arm") {
       ldflags += [
@@ -797,7 +799,7 @@ if (is_win) {
     common_optimize_on_ldflags += [
       # Specifically tell the linker to perform optimizations.
       # See http://lwn.net/Articles/192624/ .
-      "-Wl,-O1",
+      "-Wl,-O2",
       "-Wl,--gc-sections",
     ]
 
@@ -817,7 +819,7 @@ config("optimize") {
     # build also specifies /Os and /GF but these are implied by /O1.
     cflags = [ "/O1" ] + common_optimize_on_cflags + [ "/Oi" ]
   } else if (is_android || is_ios) {
-    cflags = [ "-Os" ] + common_optimize_on_cflags  # Favor size over speed.
+    cflags = [ "-Oz" ] + common_optimize_on_cflags  # Favor size over speed.
   } else {
     cflags = [ "-O2" ] + common_optimize_on_cflags
   }
